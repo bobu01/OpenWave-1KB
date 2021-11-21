@@ -150,10 +150,10 @@ class Dso:
             print ('Device not found!')
             return
 
-        if not os.path.exists('port.config'):
-            f = open('port.config', 'w+')
-            f.write(str)
-            f.close()
+        # if not os.path.exists('port.config'):
+            # f = open('port.config', 'w+')
+            # f.write(str)
+            # f.close()
 
     def getBlockData(self): #Used to get image data.
         global inBuffer
