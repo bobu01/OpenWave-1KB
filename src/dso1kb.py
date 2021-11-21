@@ -59,6 +59,9 @@ sModelTranspose = [ 'GDS-1072B','DCS-1072B','IDS-1072B','GDS-71072B','GDS-1072R'
                     'GDS-1104B','DCS-1104B','IDS-1104B','GDS-71104B','GDS-1104R','DSO-1102D']
 
 def generate_lut():
+    ''' Generate look up table for Convert from rgb565 into rgb888.
+    Table is generated at end of Dso.__init__()
+    Scope of function is local to module, but outside the Dso class.'''
     global lu_table
     num=65536
     lu_table=[]
@@ -70,7 +73,11 @@ def generate_lut():
         lu_table.append(pixel888)
 
 class Dso:
+    ''' The Dso class sends messages to the digital oscilloscope,
+    read and writes settings, gets channel data '''
+
     def __init__(self, interface):
+        ''' Init instance of Dso, check system, init class variables. '''
         self.model_name='N/A'
         if(os.name=='posix'): #unix
             if(os.uname()[1]=='raspberrypi'):
@@ -94,6 +101,7 @@ class Dso:
         else:
             self.chnum=4
             self.connection_status=0
+
         global inBuffer
         self.ver=__version__ #Driver version.
         self.iWave=[[], [], [], []]
@@ -107,24 +115,24 @@ class Dso:
         self.sModelTranspose=sModelTranspose
         generate_lut()
 
-    def connect(self, str):
-        if(str.count('.') == 3 and str.count(':') == 1): #Check if str is ip address or not.
+    def connect(self, str1):
+        if(str1.count('.') == 3 and str1.count(':') == 1): #Check if str is ip address or not.
             try:
-                self.IO=lan(str)
+                self.IO=lan(str1)
             except:
                 print ('Open LAN port failed!')
                 return
-        elif('/dev/ttyACM' in str) or ('COM' in str) or ('/dev/cu.' in str):
+        elif('/dev/ttyACM' in str1) or ('COM' in str1) or ('/dev/cu.' in str1):
             # str is COM port.
             try:
-                print ("Opening serial port", str)
-                self.IO=com(str)
+                print ("Opening serial port", str1)
+                self.IO=com(str1)
             except:
                 print ('Open COM port failed!')
                 return
             self.IO.clearBuf()
         else:
-            print ("ERROR: unknown device: ", str)
+            print ("ERROR: unknown device: ", str1)
             return
         self.write=self.IO.write
         self.read=self.IO.read
@@ -133,8 +141,8 @@ class Dso:
         self.write('*IDN?\n')
         self.model_name=self.read().decode().split(',')[1]
         model_name = self.model_name
-        print ('%s connected to %s successfully!'%(model_name, str))
-        if(self.osname=='win10') and ('COM' in str):
+        print ('%s connected to %s successfully!'%(model_name, str1))
+        if(self.osname=='win10') and ('COM' in str1):
             self.write(':USBDelay ON\n')  #Prevent data loss on Win 10.
             print ('Send :USBDelay ON')
         if(model_name in sModelList[0]):
@@ -156,6 +164,7 @@ class Dso:
             # f.close()
 
     def getBlockData(self): #Used to get image data.
+        ''' Get image data, only used by getRawData. '''
         global inBuffer
         inBuffer=self.readBytes(10)
         length=len(inBuffer)
@@ -214,6 +223,7 @@ class Dso:
                 rgb_buf+=lu_table[raw_data[index]]
             img_buf=struct.pack("1152000B", *rgb_buf)
             self.im=Image.frombuffer('RGB',(width,height), img_buf, 'raw', 'RGB',0,1)
+
         else:  #0 for PNG decode.
             self.im=Image.open(io.BytesIO(inBuffer[self.headerlen:-1]))
             print ('PngDecode()')
@@ -222,6 +232,7 @@ class Dso:
             self.im=self.im.transpose(Image.FLIP_TOP_BOTTOM) #For raspberry pi only.
 
     def getRawData(self, header_on,  ch): #Used to get waveform's raw data.
+        ''' Get channel header and data values. '''
         global inBuffer
         self.dataMode=[]
         print('Waiting CH%d data... ' % ch)
@@ -263,6 +274,8 @@ class Dso:
         return index #Return the buffer index
 
     def checkAcqState(self,  ch):
+        ''' Check acquisition state for a channel.
+        0 is not ready, 1 is ready '''
         str_stat=":ACQ%d:STAT?\n" % ch
         loop_cnt = 0
         max_cnt=0
@@ -282,6 +295,7 @@ class Dso:
         return 0
 
     def convertWaveform(self, ch, factor):
+        ''' Convert channel data to float value, downsample using factor? '''
         dv=self.vdiv[ch]/25
         if(factor==1):
             num=self.points_num
@@ -297,6 +311,7 @@ class Dso:
         return fWave
 
     def readRawDataFile(self,  fileName):
+        ''' Read external file as waveform data. '''
         #Check file format(csv or lsf)
         self.info=[[], [], [], []]
         if(fileName.lower().endswith('.csv')):
@@ -307,6 +322,7 @@ class Dso:
             return -1
         f = open(fileName, 'r')
         info=[]
+
         #Read file header.
         if(self.dataType=='csv'):
             for x in range(25):
@@ -376,12 +392,12 @@ class Dso:
             for ch in range(count):
                 self.info[ch].append(info[0])
             for x in range(1, 24):
-                str=info[x].split(',')
+                str1=info[x].split(',')
                 for ch in range(count):
-                    self.info[ch].append('%s,%s'%(str[2*ch],  str[2*ch+1]))
-            str=info[24].split(',')
+                    self.info[ch].append('%s,%s'%(str1[2*ch],  str1[2*ch+1]))
+            str1=info[24].split(',')
             for ch in range(count):
-                self.info[ch].append('%s'%str[2*ch])
+                self.info[ch].append('%s'%str1[2*ch])
 
             for ch in range(count):
                 self.ch_list.append(info[5].split(',')[2*ch+1])
@@ -396,16 +412,16 @@ class Dso:
                 for ch in range(count):
                     self.iWave[ch]=[0]*num
                 for i in range(num):
-                    str=wave[i].split(',')
+                    str1=wave[i].split(',')
                     for ch in range(count):
                         index=2*ch
-                        self.iWave[ch][i]=int(str[index])
+                        self.iWave[ch][i]=int(str1[index])
             else:
                 dv=[]
                 for ch in range(count):
                     dv.append(self.vdiv[ch]/25)
                 for i in range(num):
-                    str=wave[i].split(',')
+                    str1=wave[i].split(',')
                     for ch in range(count):
                         index=2*ch+1
                         value=float(wave[i].split(',')[index])
@@ -414,6 +430,8 @@ class Dso:
             return count
 
     def isChannelOn(self, ch):
+        ''' Query if channel is displayed. '''
+
         self.write(":CHAN%d:DISP?\n" % ch)
         onoff=self.read().decode()
         onoff=onoff[:-1]

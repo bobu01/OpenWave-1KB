@@ -35,8 +35,8 @@ import socket
 
 
 class lan:
-    def __init__(self, str):
-        ip_str=str.split(':')
+    def __init__(self, str1):
+        ip_str=str1.split(':')
         ip=ip_str[0].split('.')
         if(ip_str[1].isdigit() and ip[0].isdigit() and ip[1].isdigit() and ip[2].isdigit() and ip[3].isdigit()):
             self.IO = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -48,9 +48,9 @@ class lan:
         else:
             raise Exception('Open port error!')
 
-    def write(self, str):
+    def write(self, str1):
         try:
-            self.IO.sendall(str.encode())
+            self.IO.sendall(str1.encode())
         except socket.error as e:
             print ("write(), socket error: %s" % e)
 
@@ -67,12 +67,12 @@ class lan:
                 return line_buf
 
     def readBytes(self, length):
-        str=''
+        str1=''
         try:
-            str=self.IO.recv(length)
+            str1=self.IO.recv(length)
         except socket.error as e:
             print ("readBytes(), socket error: %s" % e)
-        return str
+        return str1
 
     def clearBuf(self):
         pass
@@ -81,8 +81,8 @@ class lan:
         self.IO.close()
 
     @classmethod
-    def connection_test(self, str):
-        ip_str=str.split(':')
+    def connection_test(self, str1):
+        ip_str=str1.split(':')
         ip=ip_str[0].split('.')
         if(ip_str[1].isdigit() and ip[0].isdigit() and ip[1].isdigit() and ip[2].isdigit() and ip[3].isdigit()):
             __port = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -93,6 +93,6 @@ class lan:
                 print ("Socket error: %s" % e)
                 return ''
             __port.close()
-            return str
+            return str1
         else:
             return ''

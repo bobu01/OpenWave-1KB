@@ -49,9 +49,9 @@ class com:
             print (e.message)
             raise Exception('__init__(), open port failed!')
 
-    def write(self, str):
+    def write(self, str1):
         try:
-            self.IO.write(str.encode())
+            self.IO.write(str1.encode())
         except serial.SerialException as e:
             print ("write(), %s" % e)
 
@@ -64,8 +64,8 @@ class com:
 
     def readBytes(self, length):
         try:
-            str=self.IO.read(length)
-            return str
+            str1=self.IO.read(length)
+            return str1
         except serial.SerialException as e:
             print ("readBytes(), %s" % e)
             return ''
@@ -100,14 +100,14 @@ class com:
         num=len(port_list)
         #print 'num=', num
         for i in range(num):
-            str=port_list[i][2].split('=')
-            #print str
-            if(str[0]=='USB VID:PID'):
-                str=str[1].split(' ')[0] #Extract VID and PID from string.
-                str=str.split(':')
-                print (str)
-                if(str[0] in usb_id):
-                    if(str[1].lower() in usb_id[str[0]]):
+            str1=port_list[i][2].split('=')
+            #print str1
+            if(str1[0]=='USB VID:PID'):
+                str1=str1[1].split(' ')[0] #Extract VID and PID from string.
+                str1=str1.split(':')
+                print (str1)
+                if(str1[0] in usb_id):
+                    if(str1[1].lower() in usb_id[str1[0]]):
                         port=port_list[i][0]
                         try:
                             __port = serial.Serial(port, baudrate=38400, bytesize=8, parity ='N', stopbits=1, xonxoff=False, dsrdtr=False, timeout=5)
@@ -125,5 +125,5 @@ class com:
                             time.sleep(0.1)
                         __port.close()
                         return port
-        print('Device not found!')
+        print('Device not found com port!')
         return ''

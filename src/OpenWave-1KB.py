@@ -58,32 +58,32 @@ import re
 
 __version__ = "1.02" #OpenWave-1KB software version.
 
-def checkInterface(str):
-    if str!= '':
-        print (str)
+def checkInterface(str1):
+    if str1!= '':
+        print (str1)
     #Load config file if it exists
     elif os.path.exists('port.config'):
         f = open('port.config', 'r')
         while(1):
-            str = f.readline()
-            if(str == ''):
+            str1 = f.readline()
+            if(str1 == ''):
                 f.close()
                 return ''
-            if(str[0] != '#'):
+            if(str1[0] != '#'):
                 break
         f.close()
 
     #Check ethernet connection(model name not checked)
-    sInterface=str.split('\n')[0]
+    sInterface=str1.split('\n')[0]
     #print 'sInterface=',sInterface
     if(sInterface.count('.') == 3 and sInterface.count(':') == 1): #Got ip address.
         ip_str=sInterface.split(':')
         ip=ip_str[0].split('.')
         if(ip_str[1].isdigit() and ip[0].isdigit() and ip[1].isdigit() and ip[2].isdigit() and ip[3].isdigit()):
             #print('ip addr=%s.%s.%s.%s:%s'%(ip[0],ip[1],ip[2],ip[3],ip_str[1]))
-            str=lan.connection_test(sInterface)
-            if(str != ''):
-                return str
+            str1=lan.connection_test(sInterface)
+            if(str1 != ''):
+                return str1
     #Check COM port connection(model name not checked)
     elif('COM' in sInterface):
         if(com.connection_test(sInterface) != ''):
@@ -281,35 +281,35 @@ class Window(QWidget):
             else :
                 f.write('%s,\r\n' % dso.info[0][0])
             for x in range(1,  23):
-                str=''
+                str1=''
                 for ch in range(num):
-                    str+=('%s,' % dso.info[ch][x])
+                    str1+=('%s,' % dso.info[ch][x])
                 if any(dso.osname == a for a in ['win','win10']) : 
-                    str+='\n'
+                    str1+='\n'
                 else :
-                    str+='\r\n'
-                f.write(str)
+                    str1+='\r\n'
+                f.write(str1)
             #Write Fast CSV mode only.
-            str=''
+            str1=''
             for ch in range(num):
-                str+='Mode,Fast,'
+                str1+='Mode,Fast,'
             if any(dso.osname == a for a in ['win','win10']) : 
-                str+='\n'
+                str1+='\n'
             else :
-                str+='\r\n'
-            f.write(str)
+                str1+='\r\n'
+            f.write(str1)
 
-            str=''
+            str1=''
             if(num==1):
-                str+=('%s,' % dso.info[0][24])
+                str1+=('%s,' % dso.info[0][24])
             else:
                 for ch in range(num):
-                    str+=('%s,,' % dso.info[ch][24])
+                    str1+=('%s,,' % dso.info[ch][24])
             if any(dso.osname == a for a in ['win','win10']) : 
-                str+='\n'
+                str1+='\n'
             else :
-                str+='\r\n'
-            f.write(str)
+                str1+='\r\n'
+            f.write(str1)
             #Write raw data.
             item=len(dso.iWave[0])
             #print item
@@ -317,17 +317,17 @@ class Window(QWidget):
             n_tenth=tenth-1
             percent=10
             for x in range(item):
-                str=''
+                str1=''
                 if(num==1):
-                    str+=('%s,' % dso.iWave[0][x])
+                    str1+=('%s,' % dso.iWave[0][x])
                 else:
                     for ch in range(num):
-                        str+=('%s, ,' % dso.iWave[ch][x])
+                        str1+=('%s, ,' % dso.iWave[ch][x])
                 if any(dso.osname == a for a in ['win','win10']) : 
-                    str+='\n'
+                    str1+='\n'
                 else :
-                    str+='\r\n'
-                f.write(str)
+                    str1+='\r\n'
+                f.write(str1)
                 if(x==n_tenth):
                     n_tenth+=tenth
                     print('%3d %% Saved\r'%percent),
