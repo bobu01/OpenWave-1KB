@@ -193,15 +193,15 @@ class Dso:
                 inBuffer+=buf
                 pkg_length=pkg_length-num
 
-    def ImageDecode(self, type):
-        if(type):  #1 for RLE decode, 0 for PNG decode.
+    def ImageDecode(self, img_type):
+        if(img_type):  #1 for RLE decode, 0 for PNG decode.
             raw_data=[]
             #Convert 8 bits array to 16 bits array.
             data = unpack('<%sH' % (len(inBuffer[self.headerlen:-1])//2), inBuffer[self.headerlen:-1])
             l=len(data)
             if( l%2 != 0):   #Ignore reserved data.
                 l=l-1
-            package_length=len(data)
+            # package_length=len(data)    # unused
             index=0
             bmp_size=0
             while True:
@@ -227,7 +227,7 @@ class Dso:
         else:  #0 for PNG decode.
             self.im=Image.open(io.BytesIO(inBuffer[self.headerlen:-1]))
             print ('PngDecode()')
-        model_name = self.model_name
+        # model_name = self.model_name    # unused?
         if(self.osname=='pi' and any(self.model_name == a for a in sModelTranspose)) :
             self.im=self.im.transpose(Image.FLIP_TOP_BOTTOM) #For raspberry pi only.
 
@@ -364,7 +364,7 @@ class Dso:
             self.dt[0]   =float(info[19].split(',')[1]) #Get sample period.
             dv1=self.vdiv[0]/25
             vpos=int(self.vpos[0]/dv1)+128
-            vpos1=self.vpos[0]
+            # vpos1=self.vpos[0]    # unused
             num=self.points_num
             if(self.dataType=='csv'):
                 for x in range(25):
