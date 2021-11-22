@@ -46,7 +46,7 @@ class com:
         try:
             self.IO = serial.Serial(port, baudrate=38400, bytesize=8, parity ='N', stopbits=1, xonxoff=False, dsrdtr=False, timeout=5)
         except serial.SerialException as e:
-            print (e.message)
+            print (e.strerror)
             raise Exception('__init__(), open port failed!')
 
     def write(self, str1):
@@ -91,7 +91,7 @@ class com:
             __port.close()
             return port
         except serial.SerialException as e:
-            print (e.message)
+            print (e.strerror)
             return ''
 
     @classmethod
@@ -112,7 +112,7 @@ class com:
                         try:
                             __port = serial.Serial(port, baudrate=38400, bytesize=8, parity ='N', stopbits=1, xonxoff=False, dsrdtr=False, timeout=5)
                         except serial.SerialException as e:
-                            print (e.message)
+                            print (e.strerror)
                             continue
                         time.sleep(0.5)
                         while(True):
