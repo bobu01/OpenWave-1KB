@@ -276,7 +276,8 @@ class Dso:
     def checkAcqState(self,  ch):
         ''' Check acquisition state for a channel.
         0 is not ready, 1 is ready '''
-        str_stat=":ACQ%d:STAT?\n" % ch
+        # str_stat=":ACQ%d:STAT?\n" % ch
+        str_stat = f":ACQ{ch}:STAT?\n"
         loop_cnt = 0
         max_cnt=0
         while True:                                #Checking acquisition is ready or not.

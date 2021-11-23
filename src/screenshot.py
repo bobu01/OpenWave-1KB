@@ -26,7 +26,7 @@ dso=dso1kb.Dso("10.10.0.77:3001")
 
 dso.write(':DISP:OUTP?\n')                 #Send command to get image from DSO.
 
-# dso.write(':DISP:PNGOutput?\n')            #Send command to get image from DSO.
+# dso.write(':DISP:PNGOutput?\n')    # Command no good for GDS-1000B
 dso.getBlockData()
 dso.ImageDecode(1)
 # self.showImage()

@@ -426,7 +426,7 @@ class Window(QWidget):
             if(img_type):
                 dso.write(':DISP:OUTP?\n')                 #Send command to get image from DSO.
             else:
-                dso.write(':DISP:PNGOutput?\n')            #Send command to get image from DSO.
+                dso.write(':DISP:PNGOutput?\n')    # Command no good for GDS-1000B
             dso.getBlockData()
             dso.ImageDecode(img_type)
             self.showImage()
